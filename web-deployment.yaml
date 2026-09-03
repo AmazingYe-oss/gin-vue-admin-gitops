@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: web-deployment
+  namespace: gva
+
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: gva-web
+
+  template:
+    metadata:
+      labels:
+        app: gva-web
+
+    spec:
+      containers:
+        - name: gva-web
+          image: gva-web:v2
+          imagePullPolicy: IfNotPresent
+
+          ports:
+          - name: http
+            containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 3
+
+          # 就绪探针
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 3

@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: server-deployment
+  namespace: gva
+  labels:
+    app: gva-server
+
+spec:
+  # Pod 副本数量
+  replicas: 1
+
+  # Deployment 如何找到它管理的 Pod
+  selector:
+    matchLabels:
+      app: gva-server
+
+  # Pod 模板
+  template:
+    metadata:
+      labels:
+        app: gva-server
+
+    spec:
+      containers:
+        - name: gva-server
+          image: gva-server:v2
+          imagePullPolicy: IfNotPresent
+
+          # 容器端口
+          ports:
+          - name: http
+            containerPort: 8888
+            protocol: TCP
+
+          # 资源限制
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+
+          # 存活探针
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          # 就绪探针
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+
+          # 挂载 Volume
+          volumeMounts:
+            - name: server-config
+              mountPath: /app/config/config.yaml
+              subPath: config.yaml
+
+            - name: server-data
+              mountPath: /app/data
+
+            - name: server-logs
+              mountPath: /app/log    
+
+      # Volume
+      volumes:
+        - name: server-config
+          configMap:
+            name: server-config
+
+        - name: server-data
+          persistentVolumeClaim:
+            claimName: gva-sqlite-pvc
+
+        - name: server-logs
+          persistentVolumeClaim:
+            claimName: server-logs-pvc      
+
+      # 优雅终止时间
+      terminationGracePeriodSeconds: 30
+
+      # Pod 调度
+      restartPolicy: Always

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+
+metadata:
+  name: server-logs-pvc
+  namespace: gva
+
+spec:
+  # 访问模式
+  accessModes:
+    - ReadWriteOnce
+
+  # 申请 1Gi 存储空间
+  resources:
+    requests:
+      storage: 1Gi
+
+  # 指定 StorageClass
+  storageClassName: local-path

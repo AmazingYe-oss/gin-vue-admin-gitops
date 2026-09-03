@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: server-config
+  namespace: gva
+
+data:
+  config.yaml: |
+    sqlite:
+      prefix: ""
+      port: ""
+      config: ""
+      db-name: gva
+      username: ""
+      password: ""
+      path: /app/data
+      engine: ""
+      log-mode: error
+      max-idle-conns: 10
+      max-open-conns: 100
+      conn-max-lifetime: 0
+      singular: false
+    system:
+        db-type: sqlite
+        oss-type: local
+        router-prefix: ""
+        addr: 8888
+        iplimit-count: 15000
+        iplimit-time: 3600
+        use-multipoint: false
+        use-redis: false
+        use-mongo: false
+        use-strict-auth: false
+        disable-auto-migrate: false
+    jwt:
+      signing-key: change-me-in-production
+      expires-time: 7d
+      buffer-time: 1d
+      issuer: qmPlus   
+
+
+    zap:
+      level: info
+      prefix: '[github.com/flipped-aurora/gin-vue-admin/server]'
+      format: console
+      director: log
+      encode-level: LowercaseColorLevelEncoder
+      stacktrace-key: stacktrace
+      show-line: true
+      log-in-console: false
+      retention-day: -1
+      access-req-body: true
+      access-resp-data: true
+      access-req-headers: true
+      access-log-max-bytes: 1024
+      file-only-modules:
+          - http
+          - sql
+
+    local:
+      path: uploads/file
+      store-path: uploads/file
