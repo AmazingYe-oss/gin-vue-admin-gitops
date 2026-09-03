@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: server-config
+  namespace: {{.Values.namespace}}
+
+data:
+  config.yaml: |
+    {{- .Values.config.yaml | nindent 4 }}

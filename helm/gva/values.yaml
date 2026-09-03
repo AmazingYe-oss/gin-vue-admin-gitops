@@ -1,12 +1,23 @@
-apiVersion: v1
-kind: ConfigMap
+namespace: gva
 
-metadata:
-  name: server-config
-  namespace: gva
+server:
+  image: gva-server:v2
+  replicas: 1
+  port: 8888
+  sqlitePvc: gva-sqlite-pvc
+  logsPvc: server-logs-pvc
+  imagePullPolicy: IfNotPresent
 
-data:
-  config.yaml: |
+web:
+  image: gva-web:v2
+  replicas: 3
+  port: 80
+  nodePort: 30080
+  type: NodePort
+  imagePullPolicy: IfNotPresent
+
+config:
+  yaml: |
     sqlite:
       prefix: ""
       port: ""
@@ -61,3 +72,7 @@ data:
     local:
       path: uploads/file
       store-path: uploads/file
+
+
+pvc:
+  storageClassName: local-path

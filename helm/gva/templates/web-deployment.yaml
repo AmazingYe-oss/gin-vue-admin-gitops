@@ -3,10 +3,10 @@ kind: Deployment
 
 metadata:
   name: web-deployment
-  namespace: gva
+  namespace: {{ .Values.namespace}}
 
 spec:
-  replicas: 3
+  replicas: {{ .Values.web.replicas}}
 
   selector:
     matchLabels:
@@ -20,12 +20,12 @@ spec:
     spec:
       containers:
         - name: gva-web
-          image: gva-web:v2
-          imagePullPolicy: IfNotPresent
+          image: {{ .Values.web.image}}
+          imagePullPolicy: {{ .Values.web.imagePullPolicy}}
 
           ports:
           - name: http
-            containerPort: 80
+            containerPort: {{ .Values.web.port}}
           livenessProbe:
             httpGet:
               path: /

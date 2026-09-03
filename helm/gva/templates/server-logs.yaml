@@ -3,7 +3,10 @@ kind: PersistentVolumeClaim
 
 metadata:
   name: server-logs-pvc
-  namespace: gva
+  namespace: {{.Values.namespace}}
+  annotations:
+    # Helm 卸载时跳过此资源——日志是排障证据，不许被 uninstall 带走
+    helm.sh/resource-policy: keep
 
 spec:
   # 访问模式
@@ -16,4 +19,4 @@ spec:
       storage: 1Gi
 
   # 指定 StorageClass
-  storageClassName: local-path
+  storageClassName: {{.Values.pvc.storageClassName}}

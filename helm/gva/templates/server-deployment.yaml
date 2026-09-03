@@ -3,13 +3,13 @@ kind: Deployment
 
 metadata:
   name: server-deployment
-  namespace: gva
+  namespace: {{ .Values.namespace}}
   labels:
     app: gva-server
 
 spec:
   # Pod 副本数量
-  replicas: 1
+  replicas: {{ .Values.server.replicas }}
 
   # Deployment 如何找到它管理的 Pod
   selector:
@@ -25,13 +25,13 @@ spec:
     spec:
       containers:
         - name: gva-server
-          image: gva-server:v2
-          imagePullPolicy: IfNotPresent
+          image: {{ .Values.server.image }}
+          imagePullPolicy: {{ .Values.server.imagePullPolicy}}
 
           # 容器端口
           ports:
           - name: http
-            containerPort: 8888
+            containerPort: {{ .Values.server.port }}
             protocol: TCP
 
           # 资源限制
@@ -87,11 +87,11 @@ spec:
 
         - name: server-data
           persistentVolumeClaim:
-            claimName: gva-sqlite-pvc
+            claimName: {{ .Values.server.sqlitePvc}}
 
         - name: server-logs
           persistentVolumeClaim:
-            claimName: server-logs-pvc      
+            claimName: {{ .Values.server.logsPvc}}     
 
       # 优雅终止时间
       terminationGracePeriodSeconds: 30
