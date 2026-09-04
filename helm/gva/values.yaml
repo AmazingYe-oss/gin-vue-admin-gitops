@@ -11,7 +11,7 @@ server:
 
 web:
   image: crpi-he7mqvhihpnvi08o.cn-shanghai.personal.cr.aliyuncs.com/gin-vue-admin1/gva-web:latest
-  replicas: 3
+  replicas: 2
   port: 80
   nodePort: 30080
   type: NodePort
