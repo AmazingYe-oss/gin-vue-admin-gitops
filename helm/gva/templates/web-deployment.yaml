@@ -18,6 +18,8 @@ spec:
         app: gva-web
 
     spec:
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecret }}
       containers:
         - name: gva-web
           image: {{ .Values.web.image}}

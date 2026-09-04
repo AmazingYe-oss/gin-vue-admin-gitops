@@ -23,6 +23,8 @@ spec:
         app: gva-server
 
     spec:
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecret }}
       containers:
         - name: gva-server
           image: {{ .Values.server.image }}
