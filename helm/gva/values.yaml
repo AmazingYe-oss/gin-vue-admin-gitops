@@ -2,7 +2,7 @@ namespace: gva
 imagePullSecret: acr-secret
 
 server:
-  image: crpi-he7mqvhihpnvi08o.cn-shanghai.personal.cr.aliyuncs.com/gin-vue-admin1/gva-server:b9b293c
+  image: crpi-he7mqvhihpnvi08o.cn-shanghai.personal.cr.aliyuncs.com/gin-vue-admin1/gva-server:88797ab
   replicas: 1
   port: 8888
   sqlitePvc: gva-sqlite-pvc
