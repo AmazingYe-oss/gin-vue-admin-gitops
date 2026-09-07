@@ -4,6 +4,8 @@ kind: Service
 metadata:
   name: server
   namespace: {{ .Values.namespace }}
+  labels:
+    app: gva-server
 
 spec:
   type: ClusterIP
