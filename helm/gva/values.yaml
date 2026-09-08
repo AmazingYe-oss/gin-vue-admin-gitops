@@ -3,7 +3,7 @@ imagePullSecret: acr-secret
 
 server:
   image: crpi-he7mqvhihpnvi08o.cn-shanghai.personal.cr.aliyuncs.com/gin-vue-admin1/gva-server:98cbb1d
-  replicas: 0
+  replicas: 1
   port: 8888
   sqlitePvc: gva-sqlite-pvc
   logsPvc: server-logs-pvc
@@ -11,7 +11,7 @@ server:
 
 web:
   image: crpi-he7mqvhihpnvi08o.cn-shanghai.personal.cr.aliyuncs.com/gin-vue-admin1/gva-web:98cbb1d
-  replicas: 2
+  replicas: 3
   port: 80
   nodePort: 30080
   type: NodePort
