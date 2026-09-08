@@ -1,0 +1,27 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: gva-server-alerts
+  namespace: {{ .Values.namespace }}
+  labels:
+    release: prometheus        # ← 没有这个，一切白搭
+spec:
+  groups:
+  - name: gva-server
+    rules:
+    - alert: GvaServerDown
+      expr: up{job="server"} == 0    # 提示：up 这个指标 + job="server"，什么值代表抓不到了？
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        summary: "gva-server 抓取失败"
+        description: "Prometheus 连续 1 分钟抓不到 {{`{{ $labels.pod }}`}}"
+    - alert: GvaServerMemoryHigh
+      expr: go_memstats_heap_inuse_bytes{job="server"} > 50 * 1024 * 1024    # 提示：go_memstats_heap_inuse_bytes{job="server"} 超过 50MB 报警。想想 PromQL 怎么写"值 > 阈值"
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "gva-server 内存偏高"
+        description: "堆内存 {{`{{ $value | humanize }}`}}B 持续 5 分钟超阈值"
