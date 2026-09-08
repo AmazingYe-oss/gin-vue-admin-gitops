@@ -19,10 +19,11 @@ spec:
         description: "Prometheus 连续 1 分钟找不到 {{`{{ $labels.pod }}`}} 的任何 target"
     
     - alert: GvaServerAbsent
-      expr: absent(up{job="server"}) == 1   # 提示：up 这个指标 + job="server"，什么值代表抓不到了？
+      expr: absent(up{job="server"}) == 1
       for: 1m
       labels:
         severity: critical
+        namespace: gva
       annotations:
         summary: "gva-server 抓取失败"
         description: "Prometheus 连续 1 分钟找不到 job=server 的任何 target"    
