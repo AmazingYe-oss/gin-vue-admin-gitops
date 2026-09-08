@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: gva-notify
+  namespace: {{ .Values.namespace }}
+spec:
+  route:
+    receiver: gva-webhook
+    matchers:
+    - name: severity
+      value: critical
+    groupBy: ['alertname']
+    groupWait: 10s
+    groupInterval: 1m
+    repeatInterval: 4h
+  receivers:
+  - name: gva-webhook
+    webhookConfigs:
+    - url: "https://webhook.site/5e3046fc-2c02-42b3-9070-30fff6b02e0b"
