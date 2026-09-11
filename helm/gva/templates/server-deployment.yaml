@@ -23,14 +23,28 @@ spec:
         app: gva-server
 
     spec:
+      securityContext:
+        fsGroup: 1000
       imagePullSecrets:
         - name: {{ .Values.imagePullSecret }}
       containers:
         - name: gva-server
           image: {{ .Values.server.image }}
           imagePullPolicy: {{ .Values.server.imagePullPolicy}}
-
-          # 容器端口
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              jwt_key=$(cat /app/secrets/signing-key)
+              if [ -z "$jwt_key" ]; then
+                echo "JWT signing key is empty. Exiting." >&2
+                exit 1
+              fi
+              sed "s|_JWT_SIGNING_KEY_|$jwt_key|g" /app/config-template/config.yaml > /app/config/config.yaml
+              if ! grep -q "$jwt_key" /app/config/config.yaml; then
+                echo "ERROR: JWT key not found in rendered config" >&2
+                exit 1
+              fi
+              exec tini -- /app/gva-server -c /app/config/config.yaml
           ports:
           - name: http
             containerPort: {{ .Values.server.port }}
@@ -71,21 +85,38 @@ spec:
 
           # 挂载 Volume
           volumeMounts:
-            - name: server-config
-              mountPath: /app/config/config.yaml
-              subPath: config.yaml
+            - name: server-config-template
+              mountPath: /app/config-template
+              readOnly: true
+
+            - name: server-config-rendered
+              mountPath: /app/config
+
+            - name: jwt-secret
+              mountPath: /app/secrets
+              readOnly: true
 
             - name: server-data
               mountPath: /app/data
 
             - name: server-logs
-              mountPath: /app/log    
+              mountPath: /app/log
 
       # Volume
       volumes:
-        - name: server-config
+        - name: server-config-template
           configMap:
             name: server-config
+        - name: server-config-rendered
+          emptyDir: 
+            medium: Memory
+            sizeLimit: 16Mi
+        - name: jwt-secret
+          secret:
+            secretName: {{ .Values.server.jwtSigningKey.name }}
+            items:
+              - key: {{ .Values.server.jwtSigningKey.key }}
+                path: signing-key     
 
         - name: server-data
           persistentVolumeClaim:
@@ -93,7 +124,8 @@ spec:
 
         - name: server-logs
           persistentVolumeClaim:
-            claimName: {{ .Values.server.logsPvc}}     
+            claimName: {{ .Values.server.logsPvc}}  
+                      
 
       # 优雅终止时间
       terminationGracePeriodSeconds: 30

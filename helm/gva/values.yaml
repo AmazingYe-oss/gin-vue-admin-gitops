@@ -8,6 +8,9 @@ server:
   sqlitePvc: gva-sqlite-pvc
   logsPvc: server-logs-pvc
   imagePullPolicy: Always
+  jwtSigningKey: 
+    name: gva-jwt-secret
+    key: signing-key
 
 web:
   image: crpi-he7mqvhihpnvi08o.cn-shanghai.personal.cr.aliyuncs.com/gin-vue-admin1/gva-web:98cbb1d
@@ -46,7 +49,7 @@ config:
         use-strict-auth: false
         disable-auto-migrate: false
     jwt:
-      signing-key: change-me-in-production
+      signing-key: _JWT_SIGNING_KEY_
       expires-time: 7d
       buffer-time: 1d
       issuer: qmPlus   
